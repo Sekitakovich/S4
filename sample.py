@@ -14,7 +14,7 @@ class Sample(object):
         self.tokenizer = Tokenizer()
 
     def exec(self, *, src: str):
-        listNoun = ['名詞', '接頭詞']
+        listNoun = ['名詞', '接頭詞', '接尾詞', '形容詞']
         buffer = []
         result = []
 
@@ -22,17 +22,19 @@ class Sample(object):
             length = len(buffer)
             if length:
                 if length>1:
-                    logger.debug(f'join [{buffer}]')
+                    logger.info(f'join [{buffer}]')
                 ppp = ''.join(buffer)
                 buffer.clear()
                 result.append(Parts(text=ppp, isNoun=True))
 
         for token in self.tokenizer.tokenize(src):
             text = token.node.surface
+            logger.debug(token)
             if token.extra:
                 ooo = token.extra[0].split(',')
                 noun = ooo[0] in listNoun
             else:
+                # noun = False
                 noun = True
 
             if noun:
@@ -45,20 +47,20 @@ class Sample(object):
         append()
 
         for p in result:
-            logger.info(p)
+            if p.isNoun:
+                logger.debug(p.text)
+            else:
+                logger.info(p.text)
 
 
 if __name__ == '__main__':
 
     def main():
         sample = Sample()
-        src = '俺は典型的日本人だが、超ウラン元素とドビュッシーの室内楽曲全集が大好きな今日この頃。'
-        src = '大雪による立ち往生などで通行止めとなっていた関越道は１９日午後５時半、新潟県内の湯沢ICー小出IC（上下）の通行止めが解除されました。新潟と群馬の県境区間の通行止めは続いています。'
-        src = 'ソフトバンクの子会社「Agoop」によりますと、午後10時の人出は1週間前と比べて表参道駅の周辺で35.0％、銀座で21.7％、品川で20.4％増えていました。他にも渋谷で9.5％、六本木で8.3％増加していました。東京都内では飲食店への営業時間の短縮要請が延長され、イルミネーションも点灯時間を短くするなどしていますが、主な繁華街の人出は軒並み増加していました。'
-        src = '『鬼滅の刃』は、2016年2月から20年5月まで『週刊少年ジャンプ』で連載していた漫画が原作で、コミックス累計1億2000万部を突破する人気作。大正時代の人喰い鬼の棲む世界が舞台で、炭売りの少年・炭治郎は、人喰い鬼に家族を惨殺されたことで生活が一変し、唯一生き残ったが鬼になってしまった妹の禰豆子を人間に戻すため、家族を殺した鬼を討つために旅に出るストーリー。'
-        src = '全日本スーパーフォーミュラ選手権の第7戦のフリー走行が12月19日の15時から富士スピードウェイで行われ、野尻智紀（TEAM MUGEN）がトップタイムを記録した。チャンピオンを争う平川亮（ITOCHU ENEX TEAM IMPUL）は3番手、山本尚貴（DOCOMO TEAM DANDELION RACING）はセッション最後のニュータイヤでのアタックを行わなかった模様で最下位となっている。'
-        src = '逆転チャンピオンを狙う野尻がトップタイムを奪い、2番手に笹原とTEAM MUGENが好調さを見せ、平川も順調な様子。山本の最下位は気になるところだが、午前の専有走行では3番手、この午後の練習走行でもチームメイトの福住仁嶺（DOCOMO TEAM DANDELION RACING）が8番手のタイムをマークしていることから、調子が悪いわけではなさそうだ。'
-        src = 'Analyzer 初期化時に，CharFilter のリスト，初期化済み Tokenizer オブジェクト，TokenFilter のリストを指定します。0 個以上，任意の数の CharFilter や TokenFilter を指定できます。 Analyzer を初期化したら，analyze() メソッドに解析したい文字列を渡します。戻り値はトークンの generator です（最後に指定した TokenFilter の出力により，generator の返す要素の型が決まります）。'
+
+        src = '2020年の国民的大事件は「新型コロナウイルス」と「アンジャッシュ渡部不倫騒動」と「ホンダF1撤退発表」'
+        src = '今年1月に上演された舞台『鬼滅の刃』の新作公演が、2021年夏に上演されることが決定した。19日にオンライン上で開催された「ジャンプフェスタ 2021 ONLINE 」にて発表された。'
+        src = '電源構成は、特定の電源や燃料源への依存度が過度に高まらないようにしつつ、低廉で安定的なベースロード電源を国際的にも遜色のない水準で確保すること、安定供給に必要な予備力、調整力を堅持すること、環境への適合を図ることが重要であり、バランスのとれた電源構成の実現に注力していく必要がある。一方、東京電力福島第一原子力発電所事故後、電力需要に変化が見られるようになっている。こうした需要動向の変化を踏まえつつ、節電や、空調エネルギーのピークカットなどピーク対策の取組を進めることで電力の負荷平準化を図り、供給構造の効率化を進めていくことが必要である。'
         sample.exec(src=src)
 
 
