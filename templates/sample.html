@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{{title}}</title>
+    <style>
+        .nounF {
+            font-weight: normal;
+        }
+
+        .nounT {
+            font-weight: bold;
+        }
+
+    </style>
+</head>
+<body>
+<!--<label for="board"></label><textarea id="board" name="board" cols="80" rows="20"></textarea>-->
+<!--<input type="button" id="exec" name="exec" value="Exec">-->
+{% for c in item %}<span class="{% print('nounT' if c.isNoun else 'nounF') %}" id="{% print('%06d'% loop.index0) %}">{{c.text}}</span>{% endfor %}
+</body>
+</html>
