@@ -13,8 +13,8 @@
         }
 
         .stage {
-            width: 32em;
-            height: 4em;
+            width: 48em;
+            height: 8em;
             border-style: solid;
             border-width: 0.5px;
             border-color: black;
@@ -30,10 +30,45 @@
 </head>
 <body>
 <div id="stage" class="stage">
-{% for c in item %}<span class="{% print('nounT' if c.isNoun else 'nounF') %}" id="{% print('%06d'% loop.index0) %}">{{ c.text }}</span>{% endfor %}
+<!--{% for c in item %}<span class="{% print('nounT' if c.isNoun else 'nounF') %}" id="{% print('%06d'% loop.index0) %}">{{ c.text }}</span>{% endfor %}-->
 </div>
-<div id="board">
-<textarea id="board" cols="80" rows="6"></textarea>
+<div id="input">
+<textarea id="board" cols="96" rows="12"></textarea>
 </div>
+<script type="text/javascript">
+    jQuery(document).ready(function (){
+        console.log('Start');
+        const stage = jQuery('#stage');
+        const board = jQuery('#board');
+
+        board.on('change', function (e){
+            const src = board.val()
+            // console.log(src);
+            jQuery.ajax({
+                url: 'convert',
+                type: 'POST',
+                data: {text: src},
+                dataType: 'json',
+            }).done(function (res, status){
+                console.log(res);
+                var buffer = [];
+                for (item of res){
+                    if (item.isNoun) {
+                        buffer.push('<span class="nounT">' + item.text + '</span>');
+                    }
+                    else{
+                        buffer.push('<span class="nounF">' + item.text + '</span>');
+                    }
+                }
+                // console.log(buffer);
+                const html = buffer.join('');
+                // console.log(html);
+                stage.html(html);
+            }).fail(function (ooo, status, error){
+                console.log(status, error);
+            })
+        });
+    });
+</script>
 </body>
 </html>

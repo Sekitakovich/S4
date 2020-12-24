@@ -16,7 +16,7 @@ class Sample(object):
     def __init__(self):
         self.tokenizer = Tokenizer()
         self.table1st = ['名詞', '接頭詞', '接尾詞', '形容詞']
-        self.table2nd = ['副詞可能', '非自立']
+        self.table2nd = ['副詞可能', '非自立', '代名詞']
 
         # ppp = json.dumps(ooo, ensure_ascii=False)
 
@@ -30,16 +30,20 @@ class Sample(object):
         self.api = responder.API()
 
         self.api.add_route('/', self.topPage)
+        self.api.add_route('/convert', self.convert)
         self.api.run(address='0.0.0.0', port=80)
 
     def topPage(self, req: responder.Request, res: responder.Response):
-        src = '新型コロナウイルスの感染急拡大を受け、全国知事会は20日、緊急対策会議をオンラインで開いた。菅義偉首相が観光支援事業「GoToトラベル」を唐突に一斉停止したことに反発の声が上がったほか、都道府県知事の権限強化に向けた法改正など政府への注文が相次いだ。'
-        src = '気象庁は２０日、北海道、東北、北陸などに大雪に関する気象情報を発表、関東甲信地方については午前１１時前に情報を更新した。長野県北部と関東地方北部の山沿いでは夜遅くにかけて、大雪や路面の凍結による交通障害、なだれなどに注意が必要としている。'
-        src = '東京電力福島第一原子力発電所には、東日本大震災によるメルトダウンから9年が過ぎた今でも大量の放射性廃棄物が放置されている'
-        src = '「桜を見る会」をめぐる問題で、与党は２４日、東京地検特捜部による安倍前首相の公設第一秘書への処分が出た場合、２５日にも安倍前首相の国会招致に応じる方向で調整していることがわかりました。'
-        result = self.analyze(src=src)
-        item = [asdict(w) for w in result]
-        res.content = self.api.template('sample.html', title='S4 was back', item=item)
+        res.content = self.api.template('sample.html', title='S4 was back')
+
+    async def convert(self, req: responder.Request, res: responder.Response):
+        src = await req.media()
+        text = src['text']
+        # logger.debug(text)
+
+        result = [asdict(w) for w in self.analyze(src=text)]
+
+        res.content = json.dumps(result)
 
     def analyze(self, *, src: str) -> list[Word]:
         result = []
