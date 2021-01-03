@@ -55,7 +55,7 @@ class Antenna(Thread):
             while self.watch:
                 try:
                     stream, sender = sock.recvfrom(self.bufferSize)
-                except (socket.error) as e:
+                except (socket.error, KeyboardInterrupt) as e:
                     logger.error(e)
                     break
                 else:
@@ -111,9 +111,16 @@ class Receiver(Process):
             member[channel] = A
 
         while True:
-            ooo: Report = self.inputQueue.get()
-            self.route450(stream=ooo.raw)
-            # logger.info(f'{ooo.channel} {ooo.stream}')
+            try:
+                ooo: Report = self.inputQueue.get()
+            except (KeyboardInterrupt) as e:
+                logger.error(e)
+                break
+            else:
+                self.route450(stream=ooo.raw)
+
+        for k, v in member.items():
+            v.join()
 
 
 if __name__ == '__main__':
@@ -123,8 +130,13 @@ if __name__ == '__main__':
         R.start()
 
         while True:
-            ooo: Entry = R.outputQueue.get()
-            symbol = ooo.item[0]
-            logger.info(f'[{ooo.sfi}:{symbol}] {ooo.item[1:]}')
+            try:
+                ooo: Entry = R.outputQueue.get()
+            except (KeyboardInterrupt) as e:
+                logger.error(e)
+                break
+            else:
+                symbol = ooo.item[0]
+                logger.info(f'[{ooo.sfi}:{symbol}] {ooo.item[1:]}')
 
     main()
