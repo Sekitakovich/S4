@@ -2,6 +2,7 @@ from janome.tokenizer import Tokenizer
 from dataclasses import dataclass, asdict
 import responder
 import json
+from typing import List
 from loguru import logger
 
 
@@ -10,6 +11,11 @@ class Word(object):
     text: str
     isNoun: bool
     parts: int
+
+@dataclass()
+class POS(object):  # Part of speech = 品詞
+    text: str
+    ruby: str
 
 
 class Sample(object):
@@ -45,7 +51,7 @@ class Sample(object):
 
         res.content = json.dumps(result)
 
-    def analyze(self, *, src: str) -> list[Word]:
+    def analyze(self, *, src: str) -> List[Word]:
         result = []
 
         lastNoun = True
